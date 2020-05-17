@@ -1,9 +1,8 @@
 package com.pearldroidos.animals.model
 
+import com.pearldroidos.animals.di.DaggerApiComponent
 import io.reactivex.Single
-import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Inject
 
 /**
  * This retrofit implementation is extremely useful for us as developers because it gives us
@@ -13,18 +12,12 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 class AnimalApiService {
 
-    private val BASE_API = "https://us-central1-apis-4674e.cloudfunctions.net"
+    @Inject
+    lateinit var api:AnimalApi
 
-    //ConverterFactory means converting data from api to Animal and ApiKey objects by use gson transformation - from json to gson
-    //RxJava2CallAdapterFactory means giving converting data into singleton that we declared on Single in AnimalApi
-    //AdapterFactory: Get converting data from gson to object then it will do to be observable
-    private val api = Retrofit.Builder()
-        .baseUrl(BASE_API)
-        .addConverterFactory(GsonConverterFactory.create()) //In another app: Make sure that you implement retrofit2:convert-gson in gradle
-        .addCallAdapterFactory(RxJava2CallAdapterFactory.create()) //In another app: Make sure that you implement retrofit2:adapter-rxjava2 in gradle
-        .build()
-        .create(AnimalApi::class.java)
-
+    init {
+        DaggerApiComponent.create().inject(this)
+    }
 
     fun getApiKey(): Single<ApiKey>{
         return api.getApiKey()

@@ -3,6 +3,10 @@ package com.pearldroidos.animals.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.pearldroidos.animals.di.AppModule
+import com.pearldroidos.animals.di.CONTEXT_APP
+import com.pearldroidos.animals.di.DaggerViewModelComponent
+import com.pearldroidos.animals.di.TypeOfContext
 import com.pearldroidos.animals.model.Animal
 import com.pearldroidos.animals.model.AnimalApiService
 import com.pearldroidos.animals.model.ApiKey
@@ -11,6 +15,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
 
 /**
@@ -34,11 +39,22 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
 
     //Retrieve the data
     private val disposable = CompositeDisposable()
-    private val apiService = AnimalApiService()
 
-    private val prefs = SharedPreferencesHelper(getApplication())
+    @Inject
+    lateinit var apiService: AnimalApiService
+
+    @Inject
+    @field:TypeOfContext(CONTEXT_APP)
+    lateinit var prefs: SharedPreferencesHelper
 
     private var invalidApiKey = false
+
+    init {
+        DaggerViewModelComponent.builder()
+            .appModule(AppModule(getApplication()))
+            .build()
+            .inject(this)
+    }
 
     fun refresh() {
         loading.value = true
@@ -53,7 +69,7 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun hardRefresh(){
+    fun hardRefresh() {
         loading.value = true
         getKey()
     }
