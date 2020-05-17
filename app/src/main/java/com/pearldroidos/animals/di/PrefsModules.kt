@@ -11,12 +11,12 @@ import javax.inject.Singleton
 
 
 @Module
-class PrefsModules{
+open class PrefsModules{
 
     @Provides
     @Singleton
     @TypeOfContext(CONTEXT_APP)
-    fun provideSharedPreference(app:Application):SharedPreferencesHelper{
+    open fun provideSharedPreference(app:Application):SharedPreferencesHelper{
         return SharedPreferencesHelper(app)
     }
 

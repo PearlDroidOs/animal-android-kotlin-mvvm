@@ -26,6 +26,10 @@ import javax.inject.Inject
  */
 class ListViewModel(application: Application) : AndroidViewModel(application) {
 
+    constructor(application: Application, test: Boolean = true) : this(application) {
+        injected = true
+    }
+
     //'lazy' means basically that the system is not going to instantiate this live data variable unless
     //Use when it is needed --> if not it will not be needed
     val animals by lazy { MutableLiveData<List<Animal>>() } //Mutable mean 'can change'
@@ -49,14 +53,19 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
 
     private var invalidApiKey = false
 
-    init {
-        DaggerViewModelComponent.builder()
-            .appModule(AppModule(getApplication()))
-            .build()
-            .inject(this)
+    private var injected = false
+
+    fun inject() {
+        if (!injected) {
+            DaggerViewModelComponent.builder()
+                .appModule(AppModule(getApplication()))
+                .build()
+                .inject(this)
+        }
     }
 
     fun refresh() {
+        inject()
         loading.value = true
         invalidApiKey = false
 
@@ -70,6 +79,7 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun hardRefresh() {
+        inject()
         loading.value = true
         getKey()
     }
