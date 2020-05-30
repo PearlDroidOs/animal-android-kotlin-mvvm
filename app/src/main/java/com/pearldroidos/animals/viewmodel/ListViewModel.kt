@@ -116,7 +116,7 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
     private fun getAnimals(key: String) {
         disposable.add(
             apiService.getAnimals(key)
-                .subscribeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.newThread())//Give subscribeWith on thread,including onSuccess and onError
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(object : DisposableSingleObserver<List<Animal>>() {
                     override fun onSuccess(list: List<Animal>) {
